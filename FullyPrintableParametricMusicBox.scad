@@ -30,16 +30,18 @@
  *
  */
 
+include <SCCPv1.scad>
+
 // this text will be put on top of the music cylinder
-MusicCylinderName="test song";
+//MusicCylinderName="test song";
 // What font do you want to use for the text?
-MusicCylinderNameFont="write/Letters.dxf"; //["write/Letters.dxf":Basic,"write/orbitron.dxf":Futuristic,"write/BlackRose.dxf":Fancy]
+//MusicCylinderNameFont="write/Letters.dxf"; //["write/Letters.dxf":Basic,"write/orbitron.dxf":Futuristic,"write/BlackRose.dxf":Fancy]
 // how large should the font be
-MusicCylinderNameFontSize = 8;
+//MusicCylinderNameFontSize = 8;
 // how deep should the name be carved in?
-MusicCylinderNameDepth=0.6;
+//MusicCylinderNameDepth=0.6;
 // should the text be on the top or on the bottom of the music cylinder?
-MusicCylinderNamePosition=0; // [0:top, 1:bottom]
+//MusicCylinderNamePosition=0; // [0:top, 1:bottom]
 
 // the width of all the walls in the design.
 wall=4;
@@ -88,7 +90,7 @@ crankGearAngle=15;
 // diametral pitch of the gear (if you make it smaller the teeth become bigger (the addendum becomes bigger) I tink of it as teeth per unit :)
 diametral_pitch = 0.6;
 // the height of all the gears
-gearH=7.5;
+gearH=7.6;
 
 // direction that crank hast to be turned it to play the song (has a bug: music is played backwards in clockwise mode so better leave it counter clockwise)
 crankDirection = 0; // [1:Clockwise, 0:CounterClockwise]
@@ -122,7 +124,7 @@ gear_hold_R = 4;
 // used for clean CSG operations
 epsilonCSG = 0.1;
 // reduce this for faster previews
-$fn=32;
+$fn=96;
 // Replace Gears with Cylinders to verify gear alignment
 DEBUG_GEARS=0; // [1:yes, 0:no]
 
@@ -310,7 +312,7 @@ module Pin() {
 }
 
 module MusicCylinder(extra=0){
-  translate([0,0,-extra]) cylinder(r = musicCylinderR, h = teethGap+musicH+extra, center=false, $fn=128);
+  //translate([0,0,-extra]) cylinder(r = musicCylinderR, h = teethGap+musicH+extra, center=false, $fn=128);
   translate([0,0,teethGap])
     for (x = [0:pinNrX-1], y = [0:pinNrY-1]){
       index = y*pinNrX + x;
@@ -322,8 +324,8 @@ module MusicCylinder(extra=0){
       }
 	}
     
-  translate([0,0,-gearH]) cylinder(r = musicCylinderR, h = gearH, center=false, $fn=128);
-  translate([0,0,musicH]) cylinder(r = musicCylinderR, h = gearH+3*teethGap, center=false, $fn=128);
+  //translate([0,0,-gearH]) cylinder(r = musicCylinderR, h = gearH, center=false, $fn=128);
+  //translate([0,0,musicH]) cylinder(r = musicCylinderR, h = gearH+3*teethGap, center=false, $fn=128);
 }
 
 module MusicBox(){
@@ -354,26 +356,185 @@ module MusicBox(){
   d = musicCylinderR - sqrt(musicCylinderR*musicCylinderR-teethHolderW*teethHolderW/4);
   hull(){
     translate([0,(teethHolderW-teethH)/2,-teethHolderW/2])
-      cube([-negXEnd-musicCylinderR+(d),gearH-(teethHolderW-teethH)/2,teethHolderW]);
+      cube([-negXEnd-musicCylinderR,gearH-(teethHolderW-teethH)/2,teethHolderW]);
     translate([teethHolderW+maxTeethL,0,0])rotate([180,0,0])  
       translate([-maxTeethL, (-1) *pinStepX + teethGap, 0])
         translate([-teethHolderW/2, teethGap,-teethH/2])
           cube([maxTeethL+teethHolderW/2, teethW, teethH]);
   }
+  difference(){
+    translate([0,(teethHolderW-teethH)/2,-teethHolderW/2])
+      cube([-negXEnd,gearH-(teethHolderW-teethH)/2,teethHolderW]);
+    translate([-negXEnd,(teethHolderW-teethH)/2-TT,0])
+      rotate([-90,0,0])cylinder(r=musicCylinderR-AT,h=gearH-(teethHolderW-teethH)/2+AT);
+  }
   hull(){
     translate([maxTeethL-TeethLen(pinNrX-1),-musicH-gearH-3*teethGap,-teethHolderW/2])
-      cube([-negXEnd-musicCylinderR+(d)-maxTeethL+TeethLen(pinNrX-1),gearH-(teethHolderW-teethH)/2,teethHolderW]);
+      cube([-negXEnd-musicCylinderR-maxTeethL+TeethLen(pinNrX-1),gearH-(teethHolderW-teethH)/2,teethHolderW]);
     translate([teethHolderW+maxTeethL,0,0])rotate([180,0,0])  
       translate([-TeethLen(pinNrX-1), (pinNrX) *pinStepX + teethGap, 0])
         translate([-teethHolderW/2, teethGap,-teethH/2])
           cube([TeethLen(pinNrX-1)+teethHolderW/2, teethW, teethH]);
-  } 
+  }
+  difference(){
+    translate([maxTeethL-TeethLen(pinNrX-1),-musicH-gearH-3*teethGap,-teethHolderW/2])
+      cube([-negXEnd-maxTeethL+TeethLen(pinNrX-1),gearH-(teethHolderW-teethH)/2,teethHolderW]);
+    translate([-negXEnd,-musicH-gearH-3*teethGap-TT,0])
+      rotate([-90,0,0])cylinder(r=musicCylinderR-AT,h=gearH-(teethHolderW-teethH)/2+AT);
+  }
 }
 
-// piano teeth
-rotate([90,0,0])
-  translate([-(noteExtendX+musicCylinderRX),musicH+3*teethGap,0])
-    MusicBox();
 
-// music cylinder
-MusicCylinder();
+
+
+
+
+// Overall scale (to avoid small numbers, internal faces or non-manifold edges)
+scl = 1;
+
+// Number of planet gears in gearbox
+planets = 5; //[3:1:21]
+// Layer height (for ring horizontal split)
+layer_h_ = 0.2; //[0:0.01:1]
+// Bearing height
+bearing_h_ = 1;  //[0:0.01:5]
+// Height of planetary layers (layer_h will be subtracted from gears>0)
+//gh_ = [7.4, 7.6, 7.6, 7.6];
+gearH2 = (musicH+teethHolderW-teethH-bearing_h_-layer_h_)/4;
+gh_ = [gearH-(teethHolderW-teethH)/2+bearing_h_-layer_h_,gearH2,gearH2,gearH2,gearH2,gearH-(teethHolderW-teethH)/2+bearing_h_];
+// Number of teeth in planet gears
+pt = [4, 5, 5, 5, 5, 4];
+// For additional gear ratios we can add or subtract extra teeth (in multiples of planets) from rings but the profile will be further from ideal
+of = [0, 0, 0, 0, 0, 0];
+// number of teeth to twist across
+nt = [1, 1, 1, 1, 1, 1];
+// Sun gear multiplier
+sgm = 1; //[1:1:5]
+// Outer diameter
+//outer_d_ = 25.0; //[30:0.2:300]
+// Ring wall thickness (relative pitch radius)
+//wall_ = 3; //[0:0.1:20]
+// Shaft diameter
+shaft_d_ = 0; //[0:0.1:25]
+// Outside Gear depth ratio
+depth_ratio=0.25; //[0:0.05:1]
+// Inside Gear depth ratio
+depth_ratio2=0.5; //[0:0.05:1]
+// Gear clearance
+tol_=0.2; //[0:0.01:0.5]
+// pressure angle
+P=30; //[30:60]
+// Chamfer exposed gears, top - watch fingers
+ChamferGearsTop = 0;				// [1:No, 0.5:Yes, 0:Half]
+// Chamfer exposed gears, bottom - help with elephant's foot/tolerance
+ChamferGearsBottom = 0;				// [1:No, 0.5:Yes, 0:Half]
+//Include a knob
+Knob = 1;				// [1:Yes , 0:No]
+//Diameter of the knob, in mm
+KnobDiameter_ = 15.0;			//[10:0.5:100]
+//Thickness of knob, including the stem, in mm:
+KnobTotalHeight_ = 15;			//[10:thin,15:normal,30:thick, 40:very thick]
+//Number of points on the knob
+FingerPoints = 6;   			//[3,4,5,6,7,8,9,10]
+//Diameter of finger holes
+FingerHoleDiameter_ = 5; //[5:0.5:50]
+TaperFingerPoints = true;			// true
+
+// Simplified model without gears
+draft = 1; // [0:No, 1:Yes]
+
+// Outer teeth
+outer_t = [5,7];
+// Width of outer teeth
+outer_w_=3; //[0:0.1:10]
+outer_w=scl*outer_w_;
+
+// Encoder symbols csv for daisy chained encoder rows
+charinput="0123456789ABCDEFEDCBA987654321,0123456789ABBA987654321";
+sym = split(",",charinput); // workaround for customizer
+// Font used for all rows
+font = "Liberation Mono:style=Bold";
+// Depth of embossed characters
+char_thickness_ = 0.5;
+char_thickness = scl*char_thickness_;
+
+// Tolerances for geometry connections.
+AT_=1/64;
+// Curve resolution settings, minimum angle
+$fa = 5/1;
+// Curve resolution settings, minimum size
+$fs = 1/1;
+// Curve resolution settings, number of segments
+//$fn=96;
+
+// common calculated variables
+modules = len(gh_);
+core_h = scl*addl(gh_,len(gh_));
+//wall = scl*wall_;
+bearing_h = scl*bearing_h_;
+gh = scl*gh_;
+//outer_d = outer_d_*scl;
+layer_h = scl*layer_h_;
+tol = scl*tol_;
+AT=AT_*scl;
+ST=AT*2;
+TT=AT/2;
+
+// Thickness of wall at thinnest point
+wall_thickness = 1.2; // [0:0.1:5]
+// Tooth overlap - how much grab the ring teeth have on the core teeth
+tooth_overlap = 1.2; // [0:0.1:5]
+// calculate wall and teeth depth from above requirements
+t = scl*(wall_thickness+tooth_overlap+2*tol_);
+w = scl*(wall_thickness+tooth_overlap+1.5*tol_-tooth_overlap/2);
+
+// Only used for gear ratio calculations for encoder (otherwise calculated internally in gearbox();)
+dt = pt*sgm;
+rt = [for(i=[0:modules-1])round((2*dt[i]+2*pt[i])/planets+of[i])*planets-dt[i]];
+//gr = [for(i=[0:modules-2])(dt[modules-1]+rt[modules-1])*rt[i] / abs(rt[i]*pt[modules-1]-rt[modules-1]*pt[i]) / sgm ];
+// for calculation of gr[i]/gr[i-1]
+// sgm is common across all stages and cancels, as is dt[modules-1]+rt[modules-1]
+// also planets are a factor of denominator (?)
+gd = [for(i=[0:modules-2])round(abs(rt[i]*pt[modules-1]-rt[modules-1]*pt[i])/planets)];
+for(i=[0:modules-3])echo(str(rt[i+1]*gd[i], "/", rt[i]*gd[i+1]));
+//for(i=[0:modules-3])if(len(sym[i])!=rt[i+1]*gd[i])echo(str("Require ", rt[i+1]*gd[i], " characters for ring", i+1, " have ",len(sym[i])));
+
+function substr(s,st,en,p="") = (st>=en||st>=len(s))?p:substr(s,st+1,en,str(p,s[st]));
+
+function split(h,s,p=[]) = let(x=search(h,s))x==[]?concat(p,s):
+    let(i=x[0],l=substr(s,0,i),r=substr(s,i+1,len(s)))split(h,r,concat(p,l));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+translate([0,0,gearH]){
+  // piano teeth
+  rotate([90,0,0])
+    translate([-(noteExtendX+musicCylinderRX),musicH+3*teethGap,0])
+      MusicBox();
+  // music cylinder
+  MusicCylinder();
+}
+
+gearbox(
+                gen = undef, scl = scl, planets = planets, layer_h_ = layer_h_, gh_ = gh_, pt = pt, of = of, nt = nt,
+                sgm = sgm, outer_d_ = musicCylinderR*2, wall_ = wall, shaft_d_ = shaft_d_, depth_ratio = depth_ratio,
+                depth_ratio2 = depth_ratio2, tol_ = tol_, P = P, bearing_h_ = bearing_h_, ChamferGearsTop = ChamferGearsTop,
+                ChamferGearsBottom = ChamferGearsBottom, Knob = Knob, KnobDiameter_ = KnobDiameter_,
+                KnobTotalHeight_ = KnobTotalHeight_, FingerPoints = FingerPoints, FingerHoleDiameter_ = FingerHoleDiameter_,
+                TaperFingerPoints = TaperFingerPoints, AT_ = AT_, $fa = $fa, $fs = $fs, $fn = $fn
+            );
