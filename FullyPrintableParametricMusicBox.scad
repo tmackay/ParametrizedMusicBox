@@ -51,7 +51,7 @@ pinNrX = 12;
 teethNotes="G 0E 1G 1A 1Bb1B 1C 2D 2E 2F 2G 2A 2";
 
 // how many time slots should there be? (If you make this much higher you should also increase musicCylinderTeeth) You can use the output of the generator for this field: http://www.wizards23.net/projects/musicbox/musicbox.html
-pinNrY = 35;
+pinNrY = 31;
 
 // the actual song. each time slot has pinNrX characters. X marks a pin everything else means no pin. You can use the output of the generator for this field: http://www.wizards23.net/projects/musicbox/musicbox.html
 pins="ooooooooXoooooooooooXoooooooooooXoooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooooooooooooooooooXoooooooooooooooooooXooooooooooooooooooooooXoooooooooooooooooooooooooXoooooooooooooXooooooooooooooooooooooXooooooooooXooooooooooXoooooooooooooooooXoooooooooooooXooooooooooooXoooooooooXooooooooooooXoooooooooooooooooooooXoooooooooXooooooooooooXoooooooooXoooooo";
@@ -314,7 +314,7 @@ module MusicCylinder(extra=0){
     for (x = [0:pinNrX-1], y = [0:pinNrY-1]){
       index = y*pinNrX + x;
       if (pins[index] == "X"){
-        rotate([0,0, y * pinStepY])
+        rotate([0,0, y * pinStepY + 180 + 180/pinNrY])
           translate([musicCylinderR, 0, (0.5+x)*pinStepX])
             rotate([0,90,0])
               Pin();
