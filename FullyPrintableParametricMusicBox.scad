@@ -44,7 +44,7 @@ include <SCCPv1.scad>
 //MusicCylinderNamePosition=0; // [0:top, 1:bottom]
 
 // the width of all the walls in the design.
-wall=4;
+wall=2.5;
 
 // how many vibrating teeth should there be? (also number of available notes) You can use the output of the generator for this field: http://www.wizards23.net/projects/musicbox/musicbox.html
 pinNrX = 13;
@@ -88,7 +88,7 @@ midGearAngle=-5;
 crankGearAngle=15;
 
 // diametral pitch of the gear (if you make it smaller the teeth become bigger (the addendum becomes bigger) I tink of it as teeth per unit :)
-diametral_pitch = 0.6;
+diametral_pitch = 0.96;
 // the height of all the gears
 gearH=7.6;
 
@@ -152,14 +152,14 @@ pulleyR=crankAxisR+wall;
 
      
 
-teethH = 4*0.4;
+teethH = 3*0.4;
 
-pinH= 3;
-pteethMinD = 1.5;
+pinH= 1;
+pteethMinD = 1.2;
 
 teethGap = 0.2;
 
-pinD=1.5;
+pinD=1.0;
 
 teethHolderW=5;
 teethHolderH=5;
@@ -173,7 +173,7 @@ circular_pitch = 180/diametral_pitch;
 addendum = 1/diametral_pitch;
 
 
-musicH=pinNrX*(wall+teethGap);
+musicH=pinNrX*(1.2+teethGap);
 
 echo("height of song cylinder");
 echo(musicH);
