@@ -33,30 +33,28 @@
 include <SCCPv1.scad>
 
 // this text will be put on top of the music cylinder
-//MusicCylinderName="test song";
+MusicCylinderName="Super Mario Bros";
 // What font do you want to use for the text?
-//MusicCylinderNameFont="write/Letters.dxf"; //["write/Letters.dxf":Basic,"write/orbitron.dxf":Futuristic,"write/BlackRose.dxf":Fancy]
+MusicCylinderNameFont="Liberation Mono:style=Bold";
 // how large should the font be
-//MusicCylinderNameFontSize = 8;
+MusicCylinderNameFontSize = 8;
 // how deep should the name be carved in?
-//MusicCylinderNameDepth=0.6;
-// should the text be on the top or on the bottom of the music cylinder?
-//MusicCylinderNamePosition=0; // [0:top, 1:bottom]
+MusicCylinderNameDepth=0.5;
 
 // the width of all the walls in the design.
 wall=2.5;
 
 // how many vibrating teeth should there be? (also number of available notes) You can use the output of the generator for this field: http://www.wizards23.net/projects/musicbox/musicbox.html
-pinNrX = 13;
+pinNrX = 12;
 
 // what should the notes on the teeth be? Each note is encoded by 3 characters: note (C,D,E,F,G,A,B), then the accidental (#, b or blank), and then the a one digit octave. You can use the output of the generator for this field: http://www.wizards23.net/projects/musicbox/musicbox.html
-teethNotes="C 0C#0D 0D#0E 0F 0F#0G 0G#0A 0A#0B 0C 1C#1D 1D#1E 1F 1";
+teethNotes="G 0E 1G 1A 1Bb1B 1C 2D 2E 2F 2G 2A 2";
 
 // how many time slots should there be? (If you make this much higher you should also increase musicCylinderTeeth) You can use the output of the generator for this field: http://www.wizards23.net/projects/musicbox/musicbox.html
 pinNrY = 35;
 
 // the actual song. each time slot has pinNrX characters. X marks a pin everything else means no pin. You can use the output of the generator for this field: http://www.wizards23.net/projects/musicbox/musicbox.html
-pins="XoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooXooXoooooooooooooooooooXoooXooXoooooooooooooooooooXoooXooXoooooooooooooooooooXoooXooXoooooooooooooooooooXoooXooXoooooooooooooooooooXoooXooXoooooooooooooXooXoooXoooooooooooooooooooXooXoooXoooooooooooooooooooXooXoooXoooooooooooooooooooXooXoooXoooooooooooooooooooXooXoooXoooooooooooooooooooXooXoooX";
+pins="ooooooooXoooooooooooXoooooooooooXoooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooooooooooooooooooXoooooooooooooooooooXooooooooooooooooooooooXoooooooooooooooooooooooooXoooooooooooooXooooooooooooooooooooooXooooooooooXooooooooooXoooooooooooooooooXoooooooooooooXooooooooooooXoooooooooXooooooooooooXoooooooooooooooooooooXoooooooooXooooooooooooXoooooooooXoooooo";
 
 // the number of teeth on the music cylinder
 musicCylinderTeeth = 24;
@@ -312,7 +310,6 @@ module Pin() {
 }
 
 module MusicCylinder(extra=0){
-  //translate([0,0,-extra]) cylinder(r = musicCylinderR, h = teethGap+musicH+extra, center=false, $fn=128);
   translate([0,0,teethGap])
     for (x = [0:pinNrX-1], y = [0:pinNrY-1]){
       index = y*pinNrX + x;
@@ -323,34 +320,34 @@ module MusicCylinder(extra=0){
               Pin();
       }
 	}
-    
-  //translate([0,0,-gearH]) cylinder(r = musicCylinderR, h = gearH, center=false, $fn=128);
-  //translate([0,0,musicH]) cylinder(r = musicCylinderR, h = gearH+3*teethGap, center=false, $fn=128);
 }
 
 module MusicBox(){
   translate([teethHolderW+maxTeethL,0,0])rotate([180,0,0]){
+    // teeth
     for (x = [0:pinNrX-1]){
       ll = TeethLen(x);
-      translate([-teethHolderW, x *pinStepX + teethGap, 0]){
-        // teeth holder
-        leftAdd = (x == 0) ? gearH : 0;
-        rightAdd = (x == pinNrX-1) ? gearH : 0;
-        translate([-ll, epsilonCSG-leftAdd, -teethHolderW/2])
-          cube([teethHolderW, pinStepX+2*epsilonCSG+leftAdd+rightAdd, teethHolderH]);
-      }
-      translate([-ll, x *pinStepX + teethGap, 0]){
-        // teeth
+      translate([-ll, x *pinStepX + teethGap, 0])
         translate([-teethHolderW/2, teethGap,-teethH/2])
           color([0,1,0])cube([ll+teethHolderW/2, teethW, teethH]);
-      }
 	}
-
-    hull()for (x = [0:pinNrX-1:pinNrX-1]){
-      ll = TeethLen(x);
-      translate([-teethHolderW, x *pinStepX + teethGap, 0])
-        translate([-ll, epsilonCSG, -teethHolderW/2])
-          cube([teethHolderW/4, pinStepX+2*epsilonCSG, teethHolderH]);
+    // teeth holder
+    difference(){
+      hull()for (x = [0:pinNrX-1]){
+        ll = TeethLen(x);
+        leftAdd = (x == 0) ? (teethHolderW-teethH)/2+2*teethGap : 0;
+        rightAdd = (x == pinNrX-1) ? (teethHolderW-teethH)/2+teethGap : 0;
+        translate([-teethHolderW, x *pinStepX + teethGap, 0])
+          translate([-ll, teethGap-leftAdd, -teethHolderW/2])
+            cube([teethHolderW, pinStepX+leftAdd+rightAdd, teethHolderH]);
+      }
+      for (x = [0:pinNrX-1]){
+        ll = TeethLen(x);
+        leftAdd = (x == 0) ? (teethHolderW-teethH)/2+2*teethGap : 0;
+        translate([-teethHolderW*0, x *pinStepX + teethGap, -TT])
+          translate([-ll, teethGap-epsilonCSG-leftAdd, -teethHolderW/2])
+            cube([maxTeethL, pinStepX+epsilonCSG+leftAdd, teethHolderH+AT]);
+      }
     }
   }
   d = musicCylinderR - sqrt(musicCylinderR*musicCylinderR-teethHolderW*teethHolderW/4);
@@ -383,11 +380,6 @@ module MusicBox(){
       rotate([-90,0,0])cylinder(r=musicCylinderR-AT,h=gearH-(teethHolderW-teethH)/2+AT);
   }
 }
-
-
-
-
-
 
 // Overall scale (to avoid small numbers, internal faces or non-manifold edges)
 scl = 1;
@@ -504,23 +496,6 @@ function substr(s,st,en,p="") = (st>=en||st>=len(s))?p:substr(s,st+1,en,str(p,s[
 function split(h,s,p=[]) = let(x=search(h,s))x==[]?concat(p,s):
     let(i=x[0],l=substr(s,0,i),r=substr(s,i+1,len(s)))split(h,r,concat(p,l));
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 translate([0,0,gearH]){
   // piano teeth
   rotate([90,0,0])
@@ -530,11 +505,19 @@ translate([0,0,gearH]){
   MusicCylinder();
 }
 
-gearbox(
-                gen = undef, scl = scl, planets = planets, layer_h_ = layer_h_, gh_ = gh_, pt = pt, of = of, nt = nt,
-                sgm = sgm, outer_d_ = musicCylinderR*2, wall_ = wall, shaft_d_ = shaft_d_, depth_ratio = depth_ratio,
-                depth_ratio2 = depth_ratio2, tol_ = tol_, P = P, bearing_h_ = bearing_h_, ChamferGearsTop = ChamferGearsTop,
-                ChamferGearsBottom = ChamferGearsBottom, Knob = Knob, KnobDiameter_ = KnobDiameter_,
-                KnobTotalHeight_ = KnobTotalHeight_, FingerPoints = FingerPoints, FingerHoleDiameter_ = FingerHoleDiameter_,
-                TaperFingerPoints = TaperFingerPoints, AT_ = AT_, $fa = $fa, $fs = $fs, $fn = $fn
-            );
+difference(){
+  gearbox(
+    gen = undef, scl = scl, planets = planets, layer_h_ = layer_h_, gh_ = gh_, pt = pt, of = of, nt = nt,
+    sgm = sgm, outer_d_ = musicCylinderR*2, wall_ = wall, shaft_d_ = shaft_d_, depth_ratio = depth_ratio,
+    depth_ratio2 = depth_ratio2, tol_ = tol_, P = P, bearing_h_ = bearing_h_, ChamferGearsTop = ChamferGearsTop,
+    ChamferGearsBottom = ChamferGearsBottom, Knob = Knob, KnobDiameter_ = KnobDiameter_,
+    KnobTotalHeight_ = KnobTotalHeight_, FingerPoints = FingerPoints, FingerHoleDiameter_ = FingerHoleDiameter_,
+    TaperFingerPoints = TaperFingerPoints, AT_ = AT_, $fa = $fa, $fs = $fs, $fn = $fn
+  );
+  for (i=[0:1],j=[0:len(MusicCylinderName)-1])
+    translate([0,0,i*(4*gearH2+gh_[0]+gh_[modules-1]/4-gh_[0]/4+bearing_h_)+gh_[0]/4])
+      rotate([90,0,j*180/(len(MusicCylinderName)-1)])translate([0,0,musicCylinderR-MusicCylinderNameDepth])
+        linear_extrude(2*MusicCylinderNameDepth+tol)
+          scale(min(1.5*PI*musicCylinderR/len(MusicCylinderName),gearH)/MusicCylinderNameFontSize)
+            text(MusicCylinderName[j],font=font,size=MusicCylinderNameFontSize,$fn=4,valign="baseline",halign="center");
+}
