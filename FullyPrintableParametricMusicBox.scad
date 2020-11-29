@@ -42,7 +42,7 @@ MusicCylinderNameDepth=0.6;
 MusicCylinderNamePosition=0; // [0:top, 1:bottom]
 
 // the width of all the walls in the design.
-wall=2;
+wall=4;
 
 // how many vibrating teeth should there be? (also number of available notes) You can use the output of the generator for this field: http://www.wizards23.net/projects/musicbox/musicbox.html
 pinNrX = 13;
@@ -88,7 +88,7 @@ crankGearAngle=15;
 // diametral pitch of the gear (if you make it smaller the teeth become bigger (the addendum becomes bigger) I tink of it as teeth per unit :)
 diametral_pitch = 0.6;
 // the height of all the gears
-gearH=3;
+gearH=7.5;
 
 // direction that crank hast to be turned it to play the song (has a bug: music is played backwards in clockwise mode so better leave it counter clockwise)
 crankDirection = 0; // [1:Clockwise, 0:CounterClockwise]
@@ -150,12 +150,12 @@ pulleyR=crankAxisR+wall;
 
      
 
-teethH = 3*0.3;
+teethH = 4*0.4;
 
 pinH= 3;
 pteethMinD = 1.5;
 
-teethGap = pinH;
+teethGap = 0.2;
 
 pinD=1.5;
 
@@ -244,34 +244,6 @@ posXEnd = crankGearXPos + crankR + 1.5*addendum + wall;
 
 posYEnd = tan(noteAlpha)*(noteExtendX + musicCylinderRX+posXEnd);
 
-
-module MyAxisSnapCutout(h, z=0, mirr=0,extra=epsilonCSG)
-{
-	translate([0,0,z])
-	mirror([0,0,mirr])
-	translate([0,0,-extra]) 
-	{	
-		cylinder(h=h+extra+snapAxisSlack, r1=h+extra+snapAxisSlack, r2=0, center=false);
-	}
-}
-
-
-module MyAxisSnapHolder(h, x=0, y=0, z=0, mirr=0,extra=wall, h2=0)
-{
-	rotate([-90,0,0])
-	mirror([0,0,mirr])
-	translate([x,-z,-extra-y]) 
-	{
-		cylinder(h=h+extra, r1=h+extra, r2=0, center=false);
-		intersection()
-		{
-			cylinder(h=h+extra+gear_hold_R, r1=h+extra+gear_hold_R, r2=0, center=false);
-			translate([0, 0, -50 + extra -gear_min_gap])
-				cube([100, 100, 100], center=true);
-		}
-	}
-}
-
 echo("Testing NoteToFrequ, expected freq is 440");
 echo(NoteToFrequ(9, 4, 0));
 
@@ -328,89 +300,70 @@ l=="9"?9:
 INVALID_DIGIT_IN_OCTAVE_CHECK_teethNotes();
 
 
-module Pin()
-{
-	difference()
-	{
-		translate([-pinStepX/2,-pinD/2,-pinH])
-		cube([pinStepX+4*teethGap, pinD, 2*(pinH+0.15)],center=false);
+module Pin() {
+  difference() {
+    translate([-pinStepX/2,-pinD/2,-pinH])
+      cube([pinStepX+4*teethGap, pinD, 2*(pinH+0.15)],center=false);
+    translate([pinStepX/2,0,0])
+      rotate([0,-35,0]) translate([4.0*pinStepX,0,0]) cube([8*pinStepX,8*pinStepX,8*pinStepX],center=true);
+  }
+}
 
-translate([pinStepX/2,0,0])
-		rotate([0,-35,0]) translate([4.0*pinStepX,0,0]) cube([8*pinStepX,8*pinStepX,8*pinStepX],center=true);
+module MusicCylinder(extra=0){
+  translate([0,0,-extra]) cylinder(r = musicCylinderR, h = teethGap+musicH+extra, center=false, $fn=128);
+  translate([0,0,teethGap])
+    for (x = [0:pinNrX-1], y = [0:pinNrY-1]){
+      index = y*pinNrX + x;
+      if (pins[index] == "X"){
+        rotate([0,0, y * pinStepY])
+          translate([musicCylinderR, 0, (0.5+x)*pinStepX])
+            rotate([0,90,0])
+              Pin();
+      }
 	}
+    
+  translate([0,0,-gearH]) cylinder(r = musicCylinderR, h = gearH, center=false, $fn=128);
+  translate([0,0,musicH]) cylinder(r = musicCylinderR, h = gearH+3*teethGap, center=false, $fn=128);
 }
 
-
-
-module MusicCylinder(extra=0)
-{
-	translate([0,0,-extra]) cylinder(r = musicCylinderR, h = teethGap+musicH+extra, center=false, $fn=128);
-	translate([0,0,teethGap])
-	for (x = [0:pinNrX-1], y = [0:pinNrY-1])
-	{
-		index = y*pinNrX + x;
-		{
-			if (pins[index] == "X")
-			{
-				
-				rotate([0,0, y * pinStepY])
-					translate([musicCylinderR, 0, (0.5+x)*pinStepX]) rotate([0,90,0])
-							Pin();
-			}
-		}
+module MusicBox(){
+  translate([teethHolderW+maxTeethL,0,0])rotate([180,0,0])
+    for (x = [0:pinNrX-1]){
+      ll = TeethLen(x);
+      translate([-maxTeethL, x *pinStepX + teethGap, 0]){
+        // teeth holder
+        leftAdd = (x == 0) ? gearH : 0;
+        rightAdd = (x == pinNrX-1) ? gearH : 0;
+        translate([-(teethHolderW), epsilonCSG-leftAdd, -teethHolderW/2])
+          cube([teethHolderW+maxTeethL-ll, pinStepX+2*epsilonCSG+leftAdd+rightAdd, teethHolderH]);
+        // teeth
+        translate([-teethHolderW/2, teethGap,-teethH/2])
+          color([0,1,0])cube([maxTeethL+teethHolderW/2, teethW, teethH]);
+      }
 	}
+  d = musicCylinderR - sqrt(musicCylinderR*musicCylinderR-teethHolderW*teethHolderW/4);
+  hull(){
+    translate([0,(teethHolderW-teethH)/2,-teethHolderW/2])
+      cube([-negXEnd-musicCylinderR+(d),gearH-(teethHolderW-teethH)/2,teethHolderW]);
+    translate([teethHolderW+maxTeethL,0,0])rotate([180,0,0])  
+      translate([-maxTeethL, (-1) *pinStepX + teethGap, 0])
+        translate([-teethHolderW/2, teethGap,-teethH/2])
+          cube([maxTeethL+teethHolderW/2, teethW, teethH]);
+  }
+  hull(){
+    translate([0,-musicH-gearH-3*teethGap,-teethHolderW/2])
+      cube([-negXEnd-musicCylinderR+(d),gearH-(teethHolderW-teethH)/2,teethHolderW]);
+    translate([teethHolderW+maxTeethL,0,0])rotate([180,0,0])  
+      translate([-maxTeethL, (pinNrX) *pinStepX + teethGap, 0])
+        translate([-teethHolderW/2, teethGap,-teethH/2])
+          cube([maxTeethL+teethHolderW/2, teethW, teethH]);
+  } 
 }
 
+// piano teeth
+rotate([90,0,0])
+  translate([-(noteExtendX+musicCylinderRX),musicH+3*teethGap,0])
+    MusicBox();
 
-
-module MusicBox()
-{
-	//mirror([0,0,1])
-	translate([teethHolderW+maxTeethL,0,0])
-
-	rotate([180,0,0])
-	for (x = [0:pinNrX-1])
-	{
-		ll = TeethLen(x);
-		{
-			translate([-maxTeethL, x *pinStepX + teethGap, 0]) 
-			{
-				// teeth holder
-				leftAdd = (x == 0) ? gearBoxW : 0;
-                rightAdd = (x == pinNrX-1) ? wall/2+gear_gap : 0;
-				{
-				translate([-(teethHolderW), epsilonCSG-leftAdd, 0]) 
-					cube([teethHolderW+maxTeethL-ll, pinStepX+2*epsilonCSG+leftAdd+rightAdd, teethHolderH]);
-				}
-				
-
-				// teeth
-				translate([-teethHolderW/2, teethGap,0])
-				color([0,1,0])cube([maxTeethL+teethHolderW/2, teethW, teethH]);
-			}
-		}
-	}
-	
-}
-
-///// CODE
-rotate([90,0,0])mirror ([0,crankDirection,0])
-    rotate([180,0,0])
-        translate([-(noteExtendX+musicCylinderRX),-(gearH/2+gear_gap+teethGap),0]) 
-            MusicBox();
-
-// music cylinder and gear
-	rotate([180,0,0])
-		translate([0,0,-(gear_gap)])
-		difference()
-		{
-			union()
-			{
-				translate([0,0,-gearH/2-gear_gap/2]) cylinder(h=gear_gap+epsilonCSG, r2=musicCylinderR-addendum, r1=musicCylinderR-addendum+gear_gap);
-				rotate([0, 180,0]) 
-translate([0,0,teethGap+gearH/2]) 
-{
-rotate([0,0,27]) MusicCylinder(extra=teethGap+epsilonCSG);
-}
-			}
-		}
+// music cylinder
+MusicCylinder();
