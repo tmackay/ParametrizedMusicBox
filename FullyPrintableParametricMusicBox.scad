@@ -50,8 +50,8 @@ pinNrX = 12;
 // what should the notes on the teeth be? Each note is encoded by 3 characters: note (C,D,E,F,G,A,B), then the accidental (#, b or blank), and then the a one digit octave. You can use the output of the generator for this field: http://www.wizards23.net/projects/musicbox/musicbox.html
 teethNotes="G 0E 1G 1A 1Bb1B 1C 2D 2E 2F 2G 2A 2";
 
-// how many time slots should there be? (If you make this much higher you should also increase musicCylinderTeeth) You can use the output of the generator for this field: http://www.wizards23.net/projects/musicbox/musicbox.html
-pinNrY = 31;
+// how many time slots should there be, including the starting position? (If you make this much higher you should also increase musicCylinderTeeth) You can use the output of the generator for this field: http://www.wizards23.net/projects/musicbox/musicbox.html
+pinNrY = 32;
 
 // the actual song. each time slot has pinNrX characters. X marks a pin everything else means no pin. You can use the output of the generator for this field: http://www.wizards23.net/projects/musicbox/musicbox.html
 pins="ooooooooXoooooooooooXoooooooooooXoooooooooXoooooooooooooXoooooooooooooXoooooooooooooXoooooooooooooooooooooooooooooXoooooooooooooooooooXooooooooooooooooooooooXoooooooooooooooooooooooooXoooooooooooooXooooooooooooooooooooooXooooooooooXooooooooooXoooooooooooooooooXoooooooooooooXooooooooooooXoooooooooXooooooooooooXoooooooooooooooooooooXoooooooooXooooooooooooXoooooooooXoooooo";
@@ -157,7 +157,7 @@ pteethMinD = 1.2;
 
 teethGap = 0.2;
 
-pinD=1.0;
+pinD=1.2;
 
 teethHolderW=5;
 teethHolderH=5;
@@ -312,9 +312,9 @@ module Pin() {
 module MusicCylinder(extra=0){
   translate([0,0,teethGap])
     for (x = [0:pinNrX-1], y = [0:pinNrY-1]){
-      index = y*pinNrX + x;
+      index = y*pinNrX + (pinNrX-x-1);
       if (pins[index] == "X"){
-        rotate([0,0, y * pinStepY + 180 + 180/pinNrY])
+        rotate([0,0, y * pinStepY + 180 + 360/pinNrY])
           translate([musicCylinderR, 0, (0.5+x)*pinStepX])
             rotate([0,90,0])
               Pin();
