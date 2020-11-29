@@ -327,20 +327,30 @@ module MusicCylinder(extra=0){
 }
 
 module MusicBox(){
-  translate([teethHolderW+maxTeethL,0,0])rotate([180,0,0])
+  translate([teethHolderW+maxTeethL,0,0])rotate([180,0,0]){
     for (x = [0:pinNrX-1]){
       ll = TeethLen(x);
-      translate([-maxTeethL, x *pinStepX + teethGap, 0]){
+      translate([-teethHolderW, x *pinStepX + teethGap, 0]){
         // teeth holder
         leftAdd = (x == 0) ? gearH : 0;
         rightAdd = (x == pinNrX-1) ? gearH : 0;
-        translate([-(teethHolderW), epsilonCSG-leftAdd, -teethHolderW/2])
-          cube([teethHolderW+maxTeethL-ll, pinStepX+2*epsilonCSG+leftAdd+rightAdd, teethHolderH]);
+        translate([-ll, epsilonCSG-leftAdd, -teethHolderW/2])
+          cube([teethHolderW, pinStepX+2*epsilonCSG+leftAdd+rightAdd, teethHolderH]);
+      }
+      translate([-ll, x *pinStepX + teethGap, 0]){
         // teeth
         translate([-teethHolderW/2, teethGap,-teethH/2])
-          color([0,1,0])cube([maxTeethL+teethHolderW/2, teethW, teethH]);
+          color([0,1,0])cube([ll+teethHolderW/2, teethW, teethH]);
       }
 	}
+
+    hull()for (x = [0:pinNrX-1:pinNrX-1]){
+      ll = TeethLen(x);
+      translate([-teethHolderW, x *pinStepX + teethGap, 0])
+        translate([-ll, epsilonCSG, -teethHolderW/2])
+          cube([teethHolderW/4, pinStepX+2*epsilonCSG, teethHolderH]);
+    }
+  }
   d = musicCylinderR - sqrt(musicCylinderR*musicCylinderR-teethHolderW*teethHolderW/4);
   hull(){
     translate([0,(teethHolderW-teethH)/2,-teethHolderW/2])
@@ -351,12 +361,12 @@ module MusicBox(){
           cube([maxTeethL+teethHolderW/2, teethW, teethH]);
   }
   hull(){
-    translate([0,-musicH-gearH-3*teethGap,-teethHolderW/2])
-      cube([-negXEnd-musicCylinderR+(d),gearH-(teethHolderW-teethH)/2,teethHolderW]);
+    translate([maxTeethL-TeethLen(pinNrX-1),-musicH-gearH-3*teethGap,-teethHolderW/2])
+      cube([-negXEnd-musicCylinderR+(d)-maxTeethL+TeethLen(pinNrX-1),gearH-(teethHolderW-teethH)/2,teethHolderW]);
     translate([teethHolderW+maxTeethL,0,0])rotate([180,0,0])  
-      translate([-maxTeethL, (pinNrX) *pinStepX + teethGap, 0])
+      translate([-TeethLen(pinNrX-1), (pinNrX) *pinStepX + teethGap, 0])
         translate([-teethHolderW/2, teethGap,-teethH/2])
-          cube([maxTeethL+teethHolderW/2, teethW, teethH]);
+          cube([TeethLen(pinNrX-1)+teethHolderW/2, teethW, teethH]);
   } 
 }
 
