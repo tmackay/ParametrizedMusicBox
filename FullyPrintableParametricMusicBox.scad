@@ -155,7 +155,7 @@ teethH = 3*0.4;
 pinH= 1;
 pteethMinD = 1.2;
 
-teethGap = 0.2;
+teethGap = 0.6;
 
 pinD=1.2;
 
@@ -392,7 +392,7 @@ layer_h_ = 0.2; //[0:0.01:1]
 bearing_h_ = 1;  //[0:0.01:5]
 // Height of planetary layers (layer_h will be subtracted from gears>0)
 //gh_ = [7.4, 7.6, 7.6, 7.6];
-gearH2 = (musicH+teethHolderW-teethH-bearing_h_-layer_h_)/4;
+gearH2 = (musicH+3*(teethGap-layer_h_)+teethHolderW-teethH-bearing_h_-layer_h_)/4; // TODO: layer_h dependency?
 gh_ = [gearH-(teethHolderW-teethH)/2+bearing_h_-layer_h_,gearH2,gearH2,gearH2,gearH2,gearH-(teethHolderW-teethH)/2+bearing_h_];
 // Number of teeth in planet gears
 pt = [4, 5, 5, 5, 5, 4];
