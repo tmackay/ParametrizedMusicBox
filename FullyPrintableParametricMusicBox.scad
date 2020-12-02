@@ -88,7 +88,7 @@ crankGearAngle=15;
 // diametral pitch of the gear (if you make it smaller the teeth become bigger (the addendum becomes bigger) I tink of it as teeth per unit :)
 diametral_pitch = 0.96;
 // the height of all the gears
-gearH=7.6;
+gearH=6.6;
 
 // direction that crank hast to be turned it to play the song (has a bug: music is played backwards in clockwise mode so better leave it counter clockwise)
 crankDirection = 0; // [1:Clockwise, 0:CounterClockwise]
@@ -310,8 +310,8 @@ module Pin() {
 }
 
 module MusicCylinder(extra=0){
-  translate([0,0,teethGap])
-    for (x = [0:pinNrX-1], y = [0:pinNrY-1]){
+  difference(){
+    translate([0,0,teethGap])for (x = [0:pinNrX-1], y = [0:pinNrY-1]){
       index = y*pinNrX + (pinNrX-x-1);
       if (pins[index] == "X"){
         rotate([0,0, y * pinStepY + 180 + 360/pinNrY])
@@ -320,6 +320,9 @@ module MusicCylinder(extra=0){
               Pin();
       }
 	}
+    translate([0,0,-gearH])
+      cylinder(r=musicCylinderR-AT,h=musicH+2*gearH+3*teethGap+AT);
+  }
 }
 
 module MusicBox(){
@@ -348,36 +351,52 @@ module MusicBox(){
           translate([-ll, teethGap-epsilonCSG-leftAdd, -teethHolderW/2])
             cube([maxTeethL, pinStepX+epsilonCSG+leftAdd, teethHolderH+AT]);
       }
+      // teeth strain relief
+      for (x = [0:pinNrX-1]){
+        ll = TeethLen(x);
+        translate([-ll, x *pinStepX + teethGap, 0])
+          translate([-teethHolderW/2, teethGap,-teethH/2-AT])
+            color([0,1,0])cube([ll+teethHolderW/2, teethW, teethH+ST]);
+      }
     }
   }
-  d = musicCylinderR - sqrt(musicCylinderR*musicCylinderR-teethHolderW*teethHolderW/4);
-  hull(){
-    translate([0,(teethHolderW-teethH)/2,-teethHolderW/2])
-      cube([-negXEnd-musicCylinderR,gearH-(teethHolderW-teethH)/2,teethHolderW]);
-    translate([teethHolderW+maxTeethL,0,0])rotate([180,0,0])  
-      translate([-maxTeethL, (-1) *pinStepX + teethGap, 0])
-        translate([-teethHolderW/2, teethGap,-teethH/2])
-          cube([maxTeethL+teethHolderW/2, teethW, teethH]);
-  }
   difference(){
-    translate([0,(teethHolderW-teethH)/2,-teethHolderW/2])
-      cube([-negXEnd,gearH-(teethHolderW-teethH)/2,teethHolderW]);
-    translate([-negXEnd,(teethHolderW-teethH)/2-TT,0])
-      rotate([-90,0,0])cylinder(r=musicCylinderR-AT,h=gearH-(teethHolderW-teethH)/2+AT);
-  }
-  hull(){
-    translate([maxTeethL-TeethLen(pinNrX-1),-musicH-gearH-3*teethGap,-teethHolderW/2])
-      cube([-negXEnd-musicCylinderR-maxTeethL+TeethLen(pinNrX-1),gearH-(teethHolderW-teethH)/2,teethHolderW]);
-    translate([teethHolderW+maxTeethL,0,0])rotate([180,0,0])  
-      translate([-TeethLen(pinNrX-1), (pinNrX) *pinStepX + teethGap, 0])
-        translate([-teethHolderW/2, teethGap,-teethH/2])
-          cube([TeethLen(pinNrX-1)+teethHolderW/2, teethW, teethH]);
-  }
-  difference(){
-    translate([maxTeethL-TeethLen(pinNrX-1),-musicH-gearH-3*teethGap,-teethHolderW/2])
-      cube([-negXEnd-maxTeethL+TeethLen(pinNrX-1),gearH-(teethHolderW-teethH)/2,teethHolderW]);
+    union(){
+      hull(){
+        translate([0,(teethHolderW-teethH)/2-teethGap,-teethHolderW/2])
+          cube([-negXEnd-musicCylinderR+musicCylinderR-sqrt(musicCylinderR*musicCylinderR-teethHolderW*teethHolderW/4),gearH+teethGap-(teethHolderW-teethH)/2,teethHolderW]);
+        translate([0,0,-teethH/2])
+          cube([-negXEnd-musicCylinderR,gearH,teethH]);
+        translate([teethHolderW+maxTeethL,0,0])rotate([180,0,0])  
+          translate([-maxTeethL, (-1) *pinStepX + teethGap, 0])
+            translate([-teethHolderW/2, teethGap,-teethH/2])
+              cube([maxTeethL+teethHolderW/2, teethW, teethH]);
+      }
+      hull(){
+        translate([0,(teethHolderW-teethH)/2-teethGap,-teethHolderW/2])
+          cube([-negXEnd,gearH+teethGap-(teethHolderW-teethH)/2,teethHolderW]);
+        translate([0,0,-teethH/2])
+          cube([-negXEnd,gearH,teethH]);
+      }
+      hull(){
+        translate([maxTeethL-TeethLen(pinNrX-1),-musicH-gearH-3*teethGap,-teethHolderW/2])
+          cube([-negXEnd-musicCylinderR-maxTeethL+TeethLen(pinNrX-1)+musicCylinderR-sqrt(musicCylinderR*musicCylinderR-teethHolderW*teethHolderW/4),gearH+teethGap-(teethHolderW-teethH)/2,teethHolderW]);
+        translate([maxTeethL-TeethLen(pinNrX-1),-musicH-gearH-3*teethGap,-teethH/2])
+          cube([-negXEnd-musicCylinderR-maxTeethL+TeethLen(pinNrX-1),gearH,teethH]);
+        translate([teethHolderW+maxTeethL,0,0])rotate([180,0,0])  
+          translate([-TeethLen(pinNrX-1), (pinNrX) *pinStepX + teethGap, 0])
+            translate([-teethHolderW/2, teethGap,-teethH/2])
+              cube([TeethLen(pinNrX-1)+teethHolderW/2, teethW, teethH]);
+      }
+      hull(){
+        translate([maxTeethL-TeethLen(pinNrX-1),-musicH-gearH-3*teethGap,-teethHolderW/2])
+          cube([-negXEnd-maxTeethL+TeethLen(pinNrX-1),gearH+teethGap-(teethHolderW-teethH)/2,teethHolderW]);
+        translate([maxTeethL-TeethLen(pinNrX-1),-musicH-gearH-3*teethGap,-teethH/2])
+          cube([-negXEnd-maxTeethL+TeethLen(pinNrX-1),gearH,teethH]);
+      }
+    }    
     translate([-negXEnd,-musicH-gearH-3*teethGap-TT,0])
-      rotate([-90,0,0])cylinder(r=musicCylinderR-AT,h=gearH-(teethHolderW-teethH)/2+AT);
+      rotate([-90,0,0])cylinder(r=musicCylinderR-AT,h=musicH+2*gearH+3*teethGap+AT);
   }
 }
 
@@ -392,14 +411,14 @@ layer_h_ = 0.2; //[0:0.01:1]
 bearing_h_ = 1;  //[0:0.01:5]
 // Height of planetary layers (layer_h will be subtracted from gears>0)
 //gh_ = [7.4, 7.6, 7.6, 7.6];
-gearH2 = (musicH+3*(teethGap-layer_h_)+teethHolderW-teethH-bearing_h_-layer_h_)/4; // TODO: layer_h dependency?
-gh_ = [gearH-(teethHolderW-teethH)/2+bearing_h_-layer_h_,gearH2,gearH2,gearH2,gearH2,gearH-(teethHolderW-teethH)/2+bearing_h_];
+gearH2 = (musicH+3*(teethGap-layer_h_)+teethHolderW-teethH-bearing_h_-layer_h_-teethHolderW+teethH)/2; // TODO: layer_h dependency?
+gh_ = [gearH+bearing_h_-layer_h_,gearH2,gearH2,gearH+bearing_h_];
 // Number of teeth in planet gears
-pt = [4, 5, 5, 5, 5, 4];
+pt = [4, 5, 5, 4];
 // For additional gear ratios we can add or subtract extra teeth (in multiples of planets) from rings but the profile will be further from ideal
-of = [0, 0, 0, 0, 0, 0];
+of = [0, 0, 0, 0];
 // number of teeth to twist across
-nt = [1, 1, 1, 1, 1, 1];
+nt = [1, 1, 1, 1];
 // Sun gear multiplier
 sgm = 1; //[1:1:5]
 // Outer diameter
@@ -506,15 +525,15 @@ translate([0,0,gearH]){
 }
 
 difference(){
-  gearbox(
-    gen = undef, scl = scl, planets = planets, layer_h_ = layer_h_, gh_ = gh_, pt = pt, of = of, nt = nt,
+  scale(1/1000)gearbox( // scale helps with internal faces
+    gen = undef, scl = 1000, planets = planets, layer_h_ = layer_h_, gh_ = gh_, pt = pt, of = of, nt = nt,
     sgm = sgm, outer_d_ = musicCylinderR*2, wall_ = wall, shaft_d_ = shaft_d_, depth_ratio = depth_ratio,
     depth_ratio2 = depth_ratio2, tol_ = tol_, P = P, bearing_h_ = bearing_h_, ChamferGearsTop = ChamferGearsTop,
     ChamferGearsBottom = ChamferGearsBottom, Knob = Knob, KnobDiameter_ = KnobDiameter_,
     KnobTotalHeight_ = KnobTotalHeight_, FingerPoints = FingerPoints, FingerHoleDiameter_ = FingerHoleDiameter_,
     TaperFingerPoints = TaperFingerPoints, AT_ = AT_, $fa = $fa, $fs = $fs, $fn = $fn
   );
-  for (i=[0:1],j=[0:len(MusicCylinderName)-1])
+  if(len(MusicCylinderName)>0)for(i=[0:1],j=[0:len(MusicCylinderName)-1])
     translate([0,0,i*(4*gearH2+gh_[0]+gh_[modules-1]/4-gh_[0]/4+bearing_h_)+gh_[0]/4])
       rotate([90,0,j*180/(len(MusicCylinderName)-1)])translate([0,0,musicCylinderR-MusicCylinderNameDepth])
         linear_extrude(2*MusicCylinderNameDepth+tol)
