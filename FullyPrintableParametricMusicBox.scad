@@ -162,7 +162,7 @@ pinD=1.2;
 teethHolderW=5;
 teethHolderH=5;
 
-
+generateSupport=1;
 
 
 
@@ -333,7 +333,14 @@ module MusicBox(){
       translate([-ll, x *pinStepX + teethGap, 0])
         translate([-teethHolderW/2, teethGap,-teethH/2])
           color([0,1,0])cube([ll+teethHolderW/2, teethW, teethH]);
+      if(generateSupport&&teethGap+epsilonCSG>3*layer_h)translate([teethH, x *pinStepX + teethGap, 0])
+        translate([-teethHolderW/2, layer_h,-teethH/2])
+          color([1,0,0])cube([teethH, teethGap-2*layer_h, teethH]);
+
 	}
+    if(generateSupport&&teethGap+epsilonCSG>3*layer_h)translate([teethH, pinNrX *pinStepX + teethGap, 0])
+      translate([-teethHolderW/2, layer_h,-teethH/2])
+        color([1,0,0])cube([teethH, teethGap-2*layer_h, teethH]);
     // teeth holder
     difference(){
       hull()for (x = [0:pinNrX-1]){
