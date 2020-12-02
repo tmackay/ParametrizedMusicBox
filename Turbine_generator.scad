@@ -1,5 +1,3 @@
-include <SCCPv1.scad>
-
 // Overall scale (to avoid small numbers, internal faces or non-manifold edges)
 scl = 1;
 // Layer height (for ring horizontal split)
@@ -109,7 +107,7 @@ printer_layer_height = 0.2; //for preview (F5) x20, set this to 0.1 for renderin
 blade_thickness = 2; //thickness of blade
 turbine_height = 15;
 num_blades = 3;
-rotation_dir = -1; //CCW = -1, CW = 1
+rotation_dir = 1; //CCW = -1, CW = 1
 
 pi = 3.14159265359;
 blade_cirf = 2*pi*blade_radius;
@@ -119,7 +117,7 @@ echo("Twist Angle: ", twist_angle);
 
 slicing = turbine_height / printer_layer_height; //equal printing slicing height
 
-percent_offset = 40; //Percent of turbine height with blades at blade radius
+percent_offset = 50; //Percent of turbine height with blades at blade radius
 //offset_slicing must be greater or equal slicing
 offset_slicing = round(slicing*(1/((100-percent_offset)/100)));  
 
@@ -127,19 +125,19 @@ echo("Percent Offset:", percent_offset);
 
 layer_h = turbine_height/offset_slicing;
 
-bot_r = blade_radius/6; //Bottom blade radius
+bot_r = blade_radius; //Bottom blade radius
 //bot_r = 7.5;
 top_r= blade_radius;
 
 delta_r = top_r - bot_r;
 
-stem_top_r = 8+2.6;
-stem_bot_r = 9+2.6;
+stem_top_r = 7+2.6;
+stem_bot_r = 8+2.6;
 
 shaft_fit_r = 2.6; //Your connecting motor pin to turbine 
 shaft_fit_l = turbine_height;
 
-
+translate([0,0,turbine_height])mirror([0,0,1])mirror([1,0,0])
 difference() {
 union() {
 
