@@ -62,13 +62,18 @@ gearH=6.6;
 crankDirection = 0; // [1:Clockwise, 0:CounterClockwise]
 // used for clean CSG operations
 epsilonCSG = 0.1;
-teethH = 3*0.4;
-pinH= 1;
+teethH = 1.2;
+// how far the musical pins protrure from the cylinder
+pinH = 1;
+// gap between piano fingers and music cylinder
 pteethMinD = 1.2;
+// vertical gaps between piano fingers
 teethGap = 0.6;
+// thickness of musical pins on cylinder
 pinD=1.2;
+// Thickness of teeth frame
 teethHolderW=5;
-teethHolderH=5;
+// Generate tooth tip support structure in model
 generateSupport=1;
 
 // Gearbox Section
@@ -242,14 +247,14 @@ module MusicBox(){
         rightAdd = (x == pinNrX-1) ? (teethHolderW-teethH)/2+teethGap : 0;
         translate([-teethHolderW, x *pinStepX + teethGap, 0])
           translate([-ll, teethGap-leftAdd, -teethHolderW/2])
-            cube([teethHolderW, pinStepX+leftAdd+rightAdd, teethHolderH]);
+            cube([teethHolderW, pinStepX+leftAdd+rightAdd, teethHolderW]);
       }
       for (x = [0:pinNrX-1]){
         ll = TeethLen(x);
         leftAdd = (x == 0) ? (teethHolderW-teethH)/2+2*teethGap : 0;
         translate([-teethHolderW*0, x *pinStepX + teethGap, -TT])
           translate([-ll, teethGap-epsilonCSG-leftAdd, -teethHolderW/2])
-            cube([maxTeethL, pinStepX+epsilonCSG+leftAdd, teethHolderH+AT]);
+            cube([maxTeethL, pinStepX+epsilonCSG+leftAdd, teethHolderW+AT]);
       }
       // teeth strain relief
       for (x = [0:pinNrX-1]){
