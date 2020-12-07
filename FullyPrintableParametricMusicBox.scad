@@ -136,14 +136,11 @@ $fn=96;
 musicH=pinNrX*(1.2+teethGap);
 // Height of planetary layers (layer_h will be subtracted from gears>0)
 gearH2 = (musicH+3*(teethGap-layer_h_)+teethHolderW-teethH-bearing_h_-layer_h_-teethHolderW+teethH)/2; // TODO: layer_h dependency?
-gh_ = [gearH+bearing_h_-layer_h_,gearH2,gearH2,gearH+bearing_h_];
+gh_ = [gearH+bearing_h_-layer_h_,gearH2,gearH2,gearH+bearing_h_]*1;
 modules = len(gh_);
-//outer_w=scl*outer_w_;
 core_h = scl*addl(gh_,len(gh_));
-//wall = scl*wall_;
 bearing_h = scl*bearing_h_;
 gh = scl*gh_;
-//outer_d = outer_d_*scl;
 layer_h = scl*layer_h_;
 tol = scl*tol_;
 AT=AT_*scl;
