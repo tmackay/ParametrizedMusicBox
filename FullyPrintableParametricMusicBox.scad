@@ -13,7 +13,11 @@
  * GNU General Public License for more details.
  *
  * The latest version can be found here:
- * https://github.com/tmackay/ParametrizedMusicBox 
+ * https://github.com/tmackay/ParametrizedMusicBox
+ *
+ * Musical geometry forked from https://github.com/wizard23/ParametrizedMusicBox
+ * Fully Printed Parametric Music Box With Exchangeable Song-Cylinders
+ * Copyright (C) 2013  Philipp Tiefenbacher <wizards23@gmail.com>
  *
  */
 
