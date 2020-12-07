@@ -1,8 +1,12 @@
-# ParametrizedMusicBox
-Previously uploaded to Thingiverse (both corrupted) [Planetary Gear Music Box](https://www.thingiverse.com/thing:4668816), [Print in Place Music Box](https://www.thingiverse.com/thing:4668819)
+# Parametrized Music Box - Print in Place
+Available as a Thingiverse Customizer [Print in Place Music Box](https://www.thingiverse.com/thing:4672175)
 Also on [MyMinifactory](https://www.myminifactory.com/object/3d-print-143523)
+Musical calculations remixed from [Parametric Music Box](https://www.thingiverse.com/thing:53235)
 
 [See it in action](https://youtu.be/H7jwQiykk-s)
+[and in closer](https://youtu.be/OX5avwUwEng)
+
+I'd strongly suggest ABS or something with good fatigue resistance for this one. Not only does PLA not have a good "plink", the fingers won't survive long from being repeatedly plucked. (see below)
 
 Print at 0.2mm layer height (check in preview that the 1-layer gaps are preserved when slicing). Somewhat sensitive to bed level and overextrusion so dial your printer in with a tolerance gauge.
 
@@ -18,4 +22,6 @@ The version with the 1-layer gap between fingers doesn't sound too hot (the fing
 
 This model is really just a gimmick, but I can see something like this being incorporated into a design which provides a high RPM input and a sound board. Something like a little wind turbine. Otherwise, if it had a bit more weight, you could hold it by the knob and twirl it.
 
-UPDATE: The first critical design flaw has surfaced (apart from needing a little post-processing finesse). The fingers will suffer fatigue failure after a few hours of continuous use. I am currently experimenting with strain relief structures but suspect this may be a hard limitation of PLA. Alternatives may exist by incorporating other materials eg. bamboo inserts or altering the design to use rigid moving parts such as little hammers sprung by an elastic band.
+UPDATE: The first critical design flaw has surfaced (apart from needing a little post-processing finesse). The fingers will suffer fatigue failure after a few hours of continuous use. I am currently experimenting with strain relief structures but suspect this may be a hard limitation of PLA. Alternatives may exist by incorporating other materials eg. bamboo inserts or altering the design to use rigid moving parts such as little hammers sprung by an elastic band. Angling the fingers might also help by not plucking them so aggressively.
+
+UPDATE2: Apologies for the very rough code - this was a quick weekend idea that I didn't expect to take off so quickly. There are a lot of unused parameters left over from copy and pasting from different models. I'll try and tidy that up as soon as I can.
