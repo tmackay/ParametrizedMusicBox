@@ -1,7 +1,7 @@
 # Parametrized Music Box - Print in Place
-Available as a Thingiverse Customizer [Print in Place Music Box](https://www.thingiverse.com/thing:4672175)
-Also on [MyMinifactory](https://www.myminifactory.com/object/3d-print-143523)
-Musical calculations remixed from [Parametric Music Box](https://www.thingiverse.com/thing:53235)
+Available as a Thingiverse Customizer [Print in Place Music Box](https://www.thingiverse.com/thing:4672175).
+Also on [MyMinifactory](https://www.myminifactory.com/object/3d-print-143523).
+Musical calculations remixed from [Parametric Music Box](https://www.thingiverse.com/thing:53235).
 
 [See it in action](https://youtu.be/H7jwQiykk-s)
 [and in closer](https://youtu.be/OX5avwUwEng)
