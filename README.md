@@ -3,7 +3,7 @@ Available as a Thingiverse Customizer [Print in Place Music Box](https://www.thi
 Also on [MyMinifactory](https://www.myminifactory.com/object/3d-print-143523).
 Musical calculations remixed from [Parametric Music Box](https://www.thingiverse.com/thing:53235).
 
-[See it in action](https://youtu.be/H7jwQiykk-s)
+[See it in action](https://youtu.be/H7jwQiykk-s),
 [and in closer](https://youtu.be/OX5avwUwEng)
 
 I'd strongly suggest ABS or something with good fatigue resistance for this one. Not only does PLA not have a good "plink", the fingers won't survive long from being repeatedly plucked. (see below)
