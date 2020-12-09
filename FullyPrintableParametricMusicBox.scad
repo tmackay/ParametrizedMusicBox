@@ -51,9 +51,9 @@ E_PLA = 8240000;
 // the gamma factor for the geometry of the teeth (extruded rectangle), use this to tune it if you have a finite state modell of the printed teeth :) taken from http://de.wikipedia.org/wiki/Durchschlagende_Zunge#Berechnung_der_Tonh.C3.B6he
 gammaTooth = 1.875; 
 // the frequency of C0 (can be used for tuning if you dont have a clue about the material properties of you printing material :)
-baseFrequC0 = 16.3516;
-// the angle of the teeth relative to the cylinder (0 would be normal to cylinder, should be some small (<10) positive angle)
-noteAlpha = 5;
+baseFrequC0 = 8.1758;
+// (TODO) the angle of the teeth relative to the cylinder (0 would be normal to cylinder, should be some small (<10) positive angle)
+noteAlpha = 0;
 // diametral pitch of the gear (if you make it smaller the teeth become bigger (the addendum becomes bigger) I tink of it as teeth per unit :)
 diametral_pitch = 0.96;
 // the height of all the gears
@@ -66,15 +66,15 @@ teethH = 1.2;
 // how far the musical pins protrure from the cylinder
 pinH = 1;
 // gap between piano fingers and music cylinder
-pteethMinD = 1.2;
+pteethMinD = 0.8;
 // vertical gaps between piano fingers
 teethGap = 0.6;
 // thickness of musical pins on cylinder
 pinD=1.2;
 // Thickness of teeth frame
 teethHolderW=5;
-// Generate tooth tip support structure in model
-generateSupport=1;
+// Length of generated tooth tip support structure in model
+generateSupport=10;
 
 // Gearbox Section
 // TODO:Overall scale (to avoid small numbers, internal faces or non-manifold edges)
@@ -229,13 +229,13 @@ module MusicBox(){
       translate([-ll, x *pinStepX + teethGap, 0])
         translate([-teethHolderW/2, teethGap,-teethH/2])
           color([0,1,0])cube([ll+teethHolderW/2, teethW, teethH]);
-      if(generateSupport&&teethGap+epsilonCSG>3*layer_h)translate([teethH, x *pinStepX + teethGap, 0])
-        translate([-teethHolderW/2, layer_h,-teethH/2])
-          color([1,0,0])cube([teethH, teethGap-2*layer_h, teethH]);
+      if(generateSupport&&teethGap+epsilonCSG>3*layer_h)
+        translate([-generateSupport, x *pinStepX + teethGap + layer_h, -teethH/2])
+          color([1,0,0])cube([generateSupport, teethGap-2*layer_h, teethH]);
 	}
-    if(generateSupport&&teethGap+epsilonCSG>3*layer_h)translate([teethH, pinNrX *pinStepX + teethGap, 0])
-      translate([-teethHolderW/2, layer_h,-teethH/2])
-        color([1,0,0])cube([teethH, teethGap-2*layer_h, teethH]);
+    if(generateSupport&&teethGap+epsilonCSG>3*layer_h)
+      translate([-generateSupport, pinNrX *pinStepX + teethGap + layer_h,-teethH/2])
+        color([1,0,0])cube([generateSupport, teethGap-2*layer_h, teethH]);
     // teeth holder
     difference(){
       hull()for (x = [0:pinNrX-1]){
